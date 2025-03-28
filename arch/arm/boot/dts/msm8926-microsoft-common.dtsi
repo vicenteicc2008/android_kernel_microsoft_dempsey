@@ -1,0 +1,22 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Common Board Device Tree for
+ * Microsoft MSM8226 Platforms
+ *
+ * Copyright (c) 2022, Jack Matthews <jm5112356@gmail.com>
+ * Copyright (c) 2022, Ivaylo Ivanov <ivo.ivanov.ivanov1@gmail.com>
+ * Copyright (c) 2022, Dominik Kobinski <dominikkobinski314@gmail.com>
+ * Copyright (c) 2022, Rayyan Ansari <rayyan@ansari.sh>
+ * Copyright (c) 2025, Vicente Cortés <vicenteicc2008@gmail.com>
+ */
+
+#include "qcom-pm8226.dtsi"
+
+/ {
+	aliases {
+		mmc0 = &sdhc_1; /* eMMC */
+		mmc1 = &sdhc_2; /* MicroSD */
+		display0 = &framebuffer0;
+	};
+
+};
