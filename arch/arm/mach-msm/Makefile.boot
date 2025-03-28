@@ -338,6 +338,8 @@ else ifeq ($(CONFIG_SEC_MEGA23G_COMMON),y)
 	 dtb-$(CONFIG_ARCH_MSM8226)	+= msm8228-sec-mega23g-r00.dtb
 else ifeq ($(CONFIG_MACH_GNOTELTEDS_OPEN),y)
 	 dtb-$(CONFIG_ARCH_MSM8226)	+= msm8926-sec-gnotelteds-r00.dtb
+else ifeq ($(CONFIG_MACH_DEMPSEY),y)
+	 dtb-$(CONFIG_ARCH_MSM8226)	+= msm8926-microsoft-dempsey.dtb
 endif
 
 # FSM9XXX
