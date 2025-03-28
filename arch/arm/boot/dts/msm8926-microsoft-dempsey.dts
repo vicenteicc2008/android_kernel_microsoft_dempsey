@@ -12,6 +12,7 @@
 
 /dts-v1/;
 /include/ "msm8926-v2.dtsi"
+/include/ "msm8926-microsoft-common.dtsi"
 
 / {
 	model = "Microsoft Lumia 640";
