@@ -11,7 +11,7 @@
  */
 
 #include "qcom-pm8226.dtsi"
-#include "msm8226.dtsi"
+#include "msm8926-v2.dtsi"
 
 / {
 	aliases {
