@@ -11,12 +11,11 @@
  */
 
 #include "qcom-pm8226.dtsi"
+#include "msm8226.dtsi"
 
 / {
 	aliases {
 		mmc0 = &sdhc_1; /* eMMC */
 		mmc1 = &sdhc_2; /* MicroSD */
-		display0 = &framebuffer0;
 	};
-
 };
