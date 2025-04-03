@@ -15,7 +15,7 @@
 #include "msm8926-microsoft-common.dtsi"
 
 / {
-	model = "Microsoft Lumia 640";
+	model = "Microsoft Lumia 640 LTE";
 	compatible = "microsoft,dempsey", "qcom,msm8926";
 	qcom,msm-id = <200 8 0x20000>,
 };
