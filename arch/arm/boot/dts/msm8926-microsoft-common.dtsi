@@ -19,3 +19,21 @@
 		mmc1 = &sdhc_2; /* MicroSD */
 	};
 };
+
+&soc {
+	synaptics@4b {
+		compatible = "synaptics,rmi4";
+		reg = <0x4b>;
+		interrupt-parent = <&msmgpio>;
+		interrupts = <11 0x2008>;
+		vdd-supply = <&pm8226_l15>;
+		vcc_i2c-supply = <&pm8226_l6>;
+		synaptics,reset-gpio = <&msmgpio 10 0x00>;
+		synaptics,irq-gpio = <&msmgpio 11 0x2008>;
+		synaptics,display-coords = <0 0 719 1279>;
+		synaptics,i2c-pull-up;
+		synaptics,power-down;
+		synaptics,disable-gpios;
+		synaptics,do-lockdown;
+	};
+};
