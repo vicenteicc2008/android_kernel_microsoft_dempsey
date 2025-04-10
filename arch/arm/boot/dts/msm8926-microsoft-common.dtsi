@@ -20,20 +20,30 @@
 	};
 };
 
-&soc {
-	synaptics@4b {
-		compatible = "synaptics,rmi4";
+&blsp1_i2c5 {
+	status = "okay";
+
+	rmi4-i2c-dev@4b {
+		compatible = "syna,rmi4-i2c";
 		reg = <0x4b>;
-		interrupt-parent = <&msmgpio>;
-		interrupts = <11 0x2008>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		interrupts-extended = <&tlmm 17 IRQ_TYPE_EDGE_FALLING>;
 		vdd-supply = <&pm8226_l15>;
-		vcc_i2c-supply = <&pm8226_l6>;
-		synaptics,reset-gpio = <&msmgpio 10 0x00>;
-		synaptics,irq-gpio = <&msmgpio 11 0x2008>;
-		synaptics,display-coords = <0 0 719 1279>;
-		synaptics,i2c-pull-up;
-		synaptics,power-down;
-		synaptics,disable-gpios;
-		synaptics,do-lockdown;
+		vio-supply = <&pm8226_l6>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&touch_pins>;
+
+		rmi4-f01@1 {
+			reg = <0x01>;
+			syna,nosleep-mode = <1>;
+		};
+
+		rmi4-f11@11 {
+			reg = <0x11>;
+			syna,sensor-type = <1>;
+		};
 	};
 };
