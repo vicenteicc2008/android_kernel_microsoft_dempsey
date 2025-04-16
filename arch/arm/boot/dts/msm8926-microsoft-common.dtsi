@@ -1,13 +1,14 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- * Common Board Device Tree for
- * Microsoft MSM8226 Platforms
+/* Copyright (c) 2013, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2025, Vicente Iñaki Cortés Cortés.
  *
- * Copyright (c) 2022, Jack Matthews <jm5112356@gmail.com>
- * Copyright (c) 2022, Ivaylo Ivanov <ivo.ivanov.ivanov1@gmail.com>
- * Copyright (c) 2022, Dominik Kobinski <dominikkobinski314@gmail.com>
- * Copyright (c) 2022, Rayyan Ansari <rayyan@ansari.sh>
- * Copyright (c) 2025, Vicente Cortés <vicenteicc2008@gmail.com>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 
 #include "qcom-pm8226.dtsi"
