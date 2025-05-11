@@ -12,7 +12,7 @@
  */
 
 /dts-v1/;
-#include "msm8926-microsoft-common.dtsi"
+/include/ "msm8926-microsoft-common.dtsi"
 
 / {
 	model = "Microsoft Lumia 640 LTE";
