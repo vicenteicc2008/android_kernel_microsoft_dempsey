@@ -11,8 +11,8 @@
  * GNU General Public License for more details.
  */
 
-#include "qcom-pm8226.dtsi"
-#include "msm8926-v2.dtsi"
+/include/ "qcom-pm8226.dtsi"
+/include/ "msm8926-v2.dtsi"
 
 / {
 	aliases {
