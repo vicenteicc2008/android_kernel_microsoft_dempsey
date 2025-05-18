@@ -26,7 +26,7 @@ jobs:
         mkdir -p /home/runner/work/output
         cp arch/arm/boot/zImage /home/runner/work/output/zImage
     - name: Uploading Output
-      uses: actions/upload-artifact@v4.1.5
+      uses: actions/upload-artifact@v4
       with:
         name: zImage
         path: /home/runner/work/output/zImage
