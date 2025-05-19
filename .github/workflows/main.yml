@@ -13,7 +13,7 @@ jobs:
 
     - name: Getting Toolchain
       run: |
-        sudo apt-get install lib32z1 ccache autoconf flex bison git build-essential make
+        sudo apt-get install lib32z1 ccache autoconf flex bison git build-essential make curl
         sudo git clone --depth 1 --branch android-8.1.0_r76 --single-branch https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8 /opt/toolchains/arm-eabi-4.8/
     - name: Building Kernel
       run: |
