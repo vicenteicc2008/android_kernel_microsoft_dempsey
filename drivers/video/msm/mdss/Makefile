@@ -52,6 +52,8 @@ mdss-dsi-objs +=logo.o  mdss_samsung_tft_video_dual_dsi_panel.o LP8556-backlight
 else ifeq ($(CONFIG_FB_MSM_MDSS_SDC_WXGA_PANEL),y)
 ifeq ($(CONFIG_MACH_DEGASLTE_SPR),y)
 mdss-dsi-objs +=logo.o mdss_sdc_wxga_dsi_panel.o
+else ifeq ($(CONFIG_MACH_DEMPSEY),y)
+mdss-dsi-objs +=logo.o mdss_sdc_wxga_dsi_panel.o
 else
 mdss-dsi-objs +=logo.o mdss_sdc_wxga_dsi_panel.o  LP8556-backlight.o
 endif
