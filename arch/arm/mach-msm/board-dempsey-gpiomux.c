@@ -132,121 +132,6 @@ static struct msm_gpiomux_config msm_synaptics_configs[] __initdata = {
 
 
 
-#ifdef CONFIG_MMC_MSM_SDC3_SUPPORT
-static struct gpiomux_setting sdc3_clk_actv_cfg = {
-	.func = GPIOMUX_FUNC_2,
-	.drv = GPIOMUX_DRV_8MA,
-	.pull = GPIOMUX_PULL_NONE,
-};
-
-static struct gpiomux_setting sdc3_cmd_data_0_3_actv_cfg = {
-	.func = GPIOMUX_FUNC_2,
-	.drv = GPIOMUX_DRV_8MA,
-	.pull = GPIOMUX_PULL_UP,
-};
-
-static struct gpiomux_setting sdc3_suspend_cfg = {
-	.func = GPIOMUX_FUNC_GPIO,
-	.drv = GPIOMUX_DRV_2MA,
-	.pull = GPIOMUX_PULL_DOWN,
-};
-
-static struct gpiomux_setting sdc3_data_1_suspend_cfg = {
-	.func = GPIOMUX_FUNC_GPIO,
-	.drv = GPIOMUX_DRV_2MA,
-	.pull = GPIOMUX_PULL_UP,
-};
-
-static struct msm_gpiomux_config msm8226_sdc3_configs[] __initdata = {
-	{
-		/* DAT3 */
-		.gpio      = 39,
-		.settings = {
-			[GPIOMUX_ACTIVE]    = &sdc3_cmd_data_0_3_actv_cfg,
-			[GPIOMUX_SUSPENDED] = &sdc3_suspend_cfg,
-		},
-	},
-	{
-		/* DAT2 */
-		.gpio      = 40,
-		.settings = {
-			[GPIOMUX_ACTIVE]    = &sdc3_cmd_data_0_3_actv_cfg,
-			[GPIOMUX_SUSPENDED] = &sdc3_suspend_cfg,
-		},
-	},
-	{
-		/* DAT1 */
-		.gpio      = 41,
-		.settings = {
-			[GPIOMUX_ACTIVE]    = &sdc3_cmd_data_0_3_actv_cfg,
-			[GPIOMUX_SUSPENDED] = &sdc3_data_1_suspend_cfg,
-		},
-	},
-	{
-		/* DAT0 */
-		.gpio      = 42,
-		.settings = {
-			[GPIOMUX_ACTIVE]    = &sdc3_cmd_data_0_3_actv_cfg,
-			[GPIOMUX_SUSPENDED] = &sdc3_suspend_cfg,
-		},
-	},
-	{
-		/* CMD */
-		.gpio      = 43,
-		.settings = {
-			[GPIOMUX_ACTIVE]    = &sdc3_cmd_data_0_3_actv_cfg,
-			[GPIOMUX_SUSPENDED] = &sdc3_suspend_cfg,
-		},
-	},
-	{
-		/* CLK */
-		.gpio      = 44,
-		.settings = {
-			[GPIOMUX_ACTIVE]    = &sdc3_clk_actv_cfg,
-			[GPIOMUX_SUSPENDED] = &sdc3_suspend_cfg,
-		},
-	},
-};
-
-static void msm_gpiomux_sdc3_install(void)
-{
-	msm_gpiomux_install(msm8226_sdc3_configs,
-			    ARRAY_SIZE(msm8226_sdc3_configs));
-}
-#else
-static void msm_gpiomux_sdc3_install(void) {}
-#endif /* CONFIG_MMC_MSM_SDC3_SUPPORT */
-
-/* TX_GTR_THRESH configurations */
-static struct gpiomux_setting tx_gtr_cfg = {
-	.func = GPIOMUX_FUNC_GPIO,
-	.drv = GPIOMUX_DRV_2MA,
-	.pull = GPIOMUX_PULL_DOWN,
-	.dir = GPIOMUX_OUT_LOW,
-};
-
-static struct msm_gpiomux_config msm8226_tx_gtr_configs[] __initdata = {
-	{
-		/* TX_GTR_THRESH */
-		.gpio      = 87,
-		.settings = {
-			[GPIOMUX_ACTIVE]    = &tx_gtr_cfg,
-			[GPIOMUX_SUSPENDED] = &tx_gtr_cfg,
-		},
-	},
-};
-
-
-
-static struct gpiomux_setting hw_chk_bit_gpio_cfg = {
-        .func = GPIOMUX_FUNC_GPIO,
-        .drv = GPIOMUX_DRV_2MA,
-        .pull = GPIOMUX_PULL_NONE,
-        .dir = GPIOMUX_IN,
-};
-
-
-
 void __init msm8226_init_gpiomux(void)
 {
 	int rc;
@@ -267,15 +152,8 @@ void __init msm8226_init_gpiomux(void)
 	msm_gpiomux_install(msm8226_tx_gtr_configs,
 		ARRAY_SIZE(msm8226_tx_gtr_configs));
 
-	/* LCD */
-	msm_gpiomux_install_nowrite(msm_lcd_configs,
-		ARRAY_SIZE(msm_lcd_configs));
-
 	/* Touch */
 	msm_gpiomux_install(msm_synaptics_configs,
 		ARRAY_SIZE(msm_synaptics_configs));
 
-	/* Earjack */
-	msm_gpiomux_install(msm_earjack_gpio_configs,
-		ARRAY_SIZE(msm_earjack_gpio_configs));
 }
