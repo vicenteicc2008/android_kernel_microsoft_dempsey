@@ -316,6 +316,7 @@ obj-$(CONFIG_SEC_DEGAS_PROJECT) += board-degas-gpiomux.o
 obj-$(CONFIG_SEC_MATISSE_PROJECT) += board-matisse-gpiomux.o
 obj-$(CONFIG_SEC_BERLUTI_PROJECT) += board-berluti-gpiomux.o
 obj-$(CONFIG_SEC_S3VE_PROJECT) += board-s3ve-gpiomux.o
+obj-$(CONFIG_DEMPSEY_PROJECT) += board-dempsey-gpiomux.o
 obj-$(CONFIG_SEC_VICTOR_PROJECT) += board-victor-gpiomux.o
 obj-$(CONFIG_SEC_AFYON_PROJECT) += board-afyon-gpiomux.o board-cypress-tsp.o
 obj-$(CONFIG_SEC_FRESCONEO_PROJECT) += board-fresconeo-gpiomux.o
