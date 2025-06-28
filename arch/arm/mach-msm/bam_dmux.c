@@ -2632,18 +2632,6 @@ static int __init bam_dmux_init(void)
 	}
 #endif
 
-#ifdef BAM_DMUX_FD
-	wakelock_timeout = 0;
-	bamDmux_pkt_dev = device_create(sec_class, NULL, 0, NULL, "bamdmux");
-	if (IS_ERR(bamDmux_pkt_dev))
-		pr_err("%s: Failed to create device(bamDmux_pkt_dev)!\n",
-			__func__);
-
-	if (device_create_file(bamDmux_pkt_dev, &dev_attr_waketime) < 0)
-		pr_err("%s: Failed to create device file(%s)!\n",
-			__func__, dev_attr_waketime.attr.name);
-#endif
-
 	bam_ipc_log_txt = ipc_log_context_create(BAM_IPC_LOG_PAGES, "bam_dmux",
 			0);
 	if (!bam_ipc_log_txt) {
