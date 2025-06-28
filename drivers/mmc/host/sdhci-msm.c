@@ -380,13 +380,6 @@ enum vdd_io_level {
 	VDD_IO_SET_LEVEL,
 };
 
-#if defined(CONFIG_BCM4335) || defined(CONFIG_BCM4335_MODULE) || \
-    defined(CONFIG_BCM4339) || defined(CONFIG_BCM4339_MODULE) || \
-    defined(CONFIG_BCM4354) || defined(CONFIG_BCM4354_MODULE)
-extern int brcm_wifi_status_register(
-	void (*callback)(int card_present, void *dev_id), void *dev_id, void *mmc_host);
-#endif
-
 /* MSM platform specific tuning */
 static inline int msm_dll_poll_ck_out_en(struct sdhci_host *host,
 						u8 poll)
@@ -1801,59 +1794,6 @@ static irqreturn_t sdhci_msm_pwr_irq(int irq, void *data)
 	 */
 	mb();
 
-	/* Handle BUS ON/OFF*/
-	if (irq_status & CORE_PWRCTL_BUS_ON) {
-		ret = sdhci_msm_setup_vreg(msm_host->pdata, true, false);
-		if (!ret) {
-			ret = sdhci_msm_setup_pins(msm_host->pdata, true);
-			ret |= sdhci_msm_set_vdd_io_vol(msm_host->pdata,
-					VDD_IO_HIGH, 0);
-		}
-		if (ret)
-			irq_ack |= CORE_PWRCTL_BUS_FAIL;
-		else
-			irq_ack |= CORE_PWRCTL_BUS_SUCCESS;
-
-		pwr_state = REQ_BUS_ON;
-		io_level = REQ_IO_HIGH;
-	}
-	if (irq_status & CORE_PWRCTL_BUS_OFF) {
-		ret = sdhci_msm_setup_vreg(msm_host->pdata, false, false);
-		if (!ret) {
-			ret = sdhci_msm_setup_pins(msm_host->pdata, false);
-			ret |= sdhci_msm_set_vdd_io_vol(msm_host->pdata,
-					VDD_IO_LOW, 0);
-		}
-		if (ret)
-			irq_ack |= CORE_PWRCTL_BUS_FAIL;
-		else
-			irq_ack |= CORE_PWRCTL_BUS_SUCCESS;
-
-		pwr_state = REQ_BUS_OFF;
-		io_level = REQ_IO_LOW;
-	}
-	/* Handle IO LOW/HIGH */
-	if (irq_status & CORE_PWRCTL_IO_LOW) {
-		/* Switch voltage Low */
-		ret = sdhci_msm_set_vdd_io_vol(msm_host->pdata, VDD_IO_LOW, 0);
-		if (ret)
-			irq_ack |= CORE_PWRCTL_IO_FAIL;
-		else
-			irq_ack |= CORE_PWRCTL_IO_SUCCESS;
-
-		io_level = REQ_IO_LOW;
-	}
-	if (irq_status & CORE_PWRCTL_IO_HIGH) {
-		/* Switch voltage High */
-		ret = sdhci_msm_set_vdd_io_vol(msm_host->pdata, VDD_IO_HIGH, 0);
-		if (ret)
-			irq_ack |= CORE_PWRCTL_IO_FAIL;
-		else
-			irq_ack |= CORE_PWRCTL_IO_SUCCESS;
-
-		io_level = REQ_IO_HIGH;
-	}
-
 	/* ACK status to the core */
 	writeb_relaxed(irq_ack, (msm_host->core_mem + CORE_PWRCTL_CTL));
 	/*
@@ -2658,24 +2598,6 @@ static int __devinit sdhci_msm_probe(struct platform_device *pdev)
 				  sdhci_msm_bus_work);
 	sdhci_msm_bus_voting(host, 1);
 
-	/* Setup regulators */
-	ret = sdhci_msm_vreg_init(&pdev->dev, msm_host->pdata, true);
-	if (ret) {
-		dev_err(&pdev->dev, "Regulator setup failed (%d)\n", ret);
-		goto bus_unregister;
-	}
-
-	/* Reset the core and Enable SDHC mode */
-	core_memres = platform_get_resource_byname(pdev,
-				IORESOURCE_MEM, "core_mem");
-	msm_host->core_mem = devm_ioremap(&pdev->dev, core_memres->start,
-					resource_size(core_memres));
-
-	if (!msm_host->core_mem) {
-		dev_err(&pdev->dev, "Failed to remap registers\n");
-		ret = -ENOMEM;
-		goto vreg_deinit;
-	}
 
 	/* Unset HC_MODE_EN bit in HC_MODE register */
 	writel_relaxed(0, (msm_host->core_mem + CORE_HC_MODE));
@@ -2683,19 +2605,6 @@ static int __devinit sdhci_msm_probe(struct platform_device *pdev)
 	/* Set SW_RST bit in POWER register (Offset 0x0) */
 	writel_relaxed(readl_relaxed(msm_host->core_mem + CORE_POWER) |
 			CORE_SW_RST, msm_host->core_mem + CORE_POWER);
-	/*
-	 * SW reset can take upto 10HCLK + 15MCLK cycles.
-	 * Calculating based on min clk rates (hclk = 27MHz,
-	 * mclk = 400KHz) it comes to ~40us. Let's poll for
-	 * max. 1ms for reset completion.
-	 */
-	ret = readl_poll_timeout(msm_host->core_mem + CORE_POWER,
-			pwr, !(pwr & CORE_SW_RST), 100, 10);
-
-	if (ret) {
-		dev_err(&pdev->dev, "reset failed (%d)\n", ret);
-		goto vreg_deinit;
-	}
 	/* Set HC_MODE_EN bit in HC_MODE register */
 	writel_relaxed(HC_MODE_EN, (msm_host->core_mem + CORE_HC_MODE));
 
@@ -2762,21 +2671,6 @@ static int __devinit sdhci_msm_probe(struct platform_device *pdev)
 
 	host->quirks2 |= SDHCI_QUIRK2_IGN_DATA_END_BIT_ERROR;
 
-	/* Setup PWRCTL irq */
-	msm_host->pwr_irq = platform_get_irq_byname(pdev, "pwr_irq");
-	if (msm_host->pwr_irq < 0) {
-		dev_err(&pdev->dev, "Failed to get pwr_irq by name (%d)\n",
-				msm_host->pwr_irq);
-		goto vreg_deinit;
-	}
-	ret = devm_request_threaded_irq(&pdev->dev, msm_host->pwr_irq, NULL,
-					sdhci_msm_pwr_irq, IRQF_ONESHOT,
-					dev_name(&pdev->dev), host);
-	if (ret) {
-		dev_err(&pdev->dev, "Request threaded irq(%d) failed (%d)\n",
-				msm_host->pwr_irq, ret);
-		goto vreg_deinit;
-	}
 
 	/* Enable pwr irq interrupts */
 	writel_relaxed(INT_MASK, (msm_host->core_mem + CORE_PWRCTL_MASK));
@@ -2819,19 +2713,6 @@ static int __devinit sdhci_msm_probe(struct platform_device *pdev)
 		msm_host->mmc->caps |= MMC_CAP_NONREMOVABLE;
 
 	host->cpu_dma_latency_us = msm_host->pdata->cpu_dma_latency_us;
-
-	init_completion(&msm_host->pwr_irq_completion);
-
-	if (gpio_is_valid(msm_host->pdata->status_gpio)) {
-		ret = mmc_cd_gpio_request(msm_host->mmc,
-				msm_host->pdata->status_gpio);
-		if (ret) {
-			dev_err(&pdev->dev, "%s: Failed to request card detection IRQ %d\n",
-					__func__, ret);
-			goto vreg_deinit;
-		}
-	}
-
 
 	if (dma_supported(mmc_dev(host->mmc), DMA_BIT_MASK(32))) {
 		host->dma_mask = DMA_BIT_MASK(32);
@@ -2917,8 +2798,6 @@ free_cd_gpio:
 		mmc_cd_gpio_free(msm_host->mmc);
 	if (sdhci_is_valid_gpio_wakeup_int(msm_host))
 		free_irq(msm_host->pdata->sdiowakeup_irq, host);
-vreg_deinit:
-	sdhci_msm_vreg_init(&pdev->dev, msm_host->pdata, false);
 bus_unregister:
 	if (msm_host->msm_bus_vote.client_handle)
 		sdhci_msm_bus_cancel_work_and_set_vote(host, 0);
@@ -2970,8 +2849,6 @@ static int __devexit sdhci_msm_remove(struct platform_device *pdev)
 
 	if (gpio_is_valid(msm_host->pdata->status_gpio))
 		mmc_cd_gpio_free(msm_host->mmc);
-
-	sdhci_msm_vreg_init(&pdev->dev, msm_host->pdata, false);
 
 	if (pdata->pin_data)
 		sdhci_msm_setup_pins(pdata, false);
