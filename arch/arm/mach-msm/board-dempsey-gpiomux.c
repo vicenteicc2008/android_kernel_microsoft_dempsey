@@ -25,6 +25,12 @@ static struct gpiomux_setting gpio_keys_active = {
 	.pull = GPIOMUX_PULL_UP,
 };
 
+static struct gpiomux_setting gpio_keys_suspend = {
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_2MA,
+	.pull = GPIOMUX_PULL_NONE,
+};
+
 static struct msm_gpiomux_config msm_keypad_configs[] __initdata = {
 	{
 		.gpio = 106,
@@ -146,11 +152,6 @@ void __init msm8226_init_gpiomux(void)
 	msm_gpiomux_install(msm_keypad_configs,
 		ARRAY_SIZE(msm_keypad_configs));
 
-
-
-	/* TX_GTR */
-	msm_gpiomux_install(msm8226_tx_gtr_configs,
-		ARRAY_SIZE(msm8226_tx_gtr_configs));
 
 	/* Touch */
 	msm_gpiomux_install(msm_synaptics_configs,
