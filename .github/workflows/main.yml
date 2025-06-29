@@ -19,6 +19,7 @@ jobs:
       run: |
         export ARCH=arm
         export CROSS_COMPILE=/opt/toolchains/arm-eabi-4.8/bin/arm-eabi-
+        make -j4 clean
         make -j2 dempsey_defconfig
         make -j12
     - name: Moving Output
